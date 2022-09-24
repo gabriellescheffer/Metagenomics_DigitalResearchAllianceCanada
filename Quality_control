@@ -1,0 +1,84 @@
+#####Quality control of the samples#####
+#Now that you have the raw data in one of the directories, you need to quality control them before going further in the metagenomics process
+#ALL PROGRAMS ARE RUN IN A SLURM SCRIPT. DO NOT EVER RUN SCRIPT LINES OF A PROGRAM IN THE TERMINAL DIRECTLY 
+
+#STEP 1: Merge all the reads together (L1 to L4 of a same sample) for all samples
+[gscheff@cedar1 7gen]$ cd GS-C1-ORIG/
+[gscheff@cedar1 GS-C1-ORIG]$ ls
+Li32357_S133_L001_R1_001.fastq.gz  Li32357_S133_L003_R1_001.fastq.gz
+Li32357_S133_L001_R2_001.fastq.gz  Li32357_S133_L003_R2_001.fastq.gz
+Li32357_S133_L002_R1_001.fastq.gz  Li32357_S133_L004_R1_001.fastq.gz
+Li32357_S133_L002_R2_001.fastq.gz  Li32357_S133_L004_R2_001.fastq.gz
+[gscheff@cedar1 GS-C1-ORIG]$ zcat Li32357_S133_L00*_R1_001.fastq.gz > GSC-C1_ORIG_R1.fastq
+[gscheff@cedar1 GS-C1-ORIG]$ zcat Li32357_S133_L00*_R2_001.fastq.gz > GSC-C1_ORIG_R2.fastq
+#Here I changed the name of the samples so that it's easier to recognize
+#Do not use .qc.gz for the merged samples name otherwise the quality control step will not work.
+
+#STEP 2: Create a new directory called QC and move the new R1-R2 files there for all samples
+mkdir QC
+cd ../QC
+#3.3 Start the quality control steps (IN SLURM SCRIPTS)
+#we need to use BBduk for the quality control, which is part of the BBmap program on ComputeCanada
+#You need to download the BBtools program from your computer, open the file once downloaded, go to resources and copy the bbduk.sh, phix_adapter.gz and adapters.gz to the QC directory
+
+#!/bin/bash
+
+#SBATCH --job-name=XXX_BBduk      ## Name of the job.
+#SBATCH --nodes=1          ## (-N) number of nodes to use
+#SBATCH --ntasks=1           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=24    ## number of cores the job needs
+#SBATCH --error=XXX.err ## error log file
+#SBATCH --out=XXX.out ## out log file
+#SBATCH --mail-type=fail,invalid_depend,begin,end
+#SBATCH --mail-user=gabrielle.scheffe1@ucalgary.ca
+#SBATCH --time=1-00:00:00
+#SBATCH --mem=128G ## memory needed to run the job (usually specified in program's specifics
+#SBATCH --account=XXX ##account on the Compute Canada server
+
+module load bbmap
+
+cd full/path/of/the/QC/file 
+
+##Step 1: trims the last base off of 151bp reads
+bbduk.sh -Xmx10g in=/path/to/the/R1.fastq/file in2=/path/to/the/R1.fastq/file  out=your_sample_name_trimLastBase_R1.fastq out2=your_sample_name_trimLastBase_R2.fastq ftm=5 threads=8 >& your_sample_name.trimLastbase.log.txt
+
+##Step 2: trim off the partial adapter
+bbduk.sh -Xmx10g in=your_sample_name_trimLastBase_R1.fastq in2=your_sample_name_trimLastBase_R2.fastq out=your_sample_name_trimAdapter_R1.fastq out2=your_sample_name_trimAdapter_R2.fastq ref=/path/to/the/adapters.fa tbo tpe k=23 mink=11 hdist=1 ktrim=r threads=8 >& your_sample_name.trimAdapter.log.txt
+
+##Step 3: filter out contaminants
+bbduk.sh in=your_sample_name_trimAdapter_R1.fastq in2=your_sample_name_trimAdapter_R2.fastq out=your_sample_name_filterPhix_R1.fastq out2=your_sample_name_filterPhix_R2.fastq outm=your_sample_name_matched_Phix.fastq ref=/path/to/the/phix_adapters.fa.gz k=31 hdist=1 stats=your_sample_name_stats.txt threads=8 >& your_sample_name.filtercontamin.log.txt
+
+##Step 4: clipping off the low quality ends
+bbduk.sh -Xmx10g in=your_sample_name_filterPhix_R1.fastq in2=your_sample_name_filterPhix_R2.fastq out=your_sample_name.qc.R1.fastq out2=your_sample_name.qc.R2.fastq qtrim=rl trimq=15 minlength=30 threads=8 >& your_sample_name.lowquality.log.txt
+
+#You will get in the XXXX.log.txt all the stats and info for the different steps of the QC. 
+#You need to redo this script for each sample. 
+#Expect the files to be slightly smaller in sizes for the XXX.RX.fastq.qc compared to the original fast.qc files
+
+#STEP 3: Assess quality control and visualize with fastqc
+#First, create a fastqc directory within the QC directory
+mkdir fastqc
+#Then, run the fastqc program. It will put html files for each sample within the fastqc directory. You will need to copy them from the directory to your own computer to open them (drag them from the fastqc directory to your desktop - left side of the Filezilla program)
+
+#example of fastqc SLURM script
+#!/bin/bash
+
+#SBATCH --job-name=XXX_fastqc      ## Name of the job.
+#SBATCH --nodes=1          ## (-N) number of nodes to use
+#SBATCH --ntasks=1           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=24    ## number of cores the job needs
+#SBATCH --error=XXX.err ## error log file
+#SBATCH --out=XXX.out ## out log file
+#SBATCH --mail-type=fail,invalid_depend,begin,end
+#SBATCH --mail-user=gabrielle.scheffe1@ucalgary.ca
+#SBATCH --time=1-00:00:00
+#SBATCH --mem=128G
+#SBATCH --account=XXX
+
+module load fastqc
+
+cd /your/path/to/QC/files
+
+fastqc -t 2 -o fastqc your_sample_name.qc.R1.fastq your_sample_name.qc.R2.fastq
+
+#Look into the quality control files, the GC content of the files can have a warning on it, but most of the quality control tabs should be green
