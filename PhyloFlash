@@ -1,0 +1,56 @@
+#PhyloFlash
+#Gives a taxonomic identity of microorganisms present within metagenomic samples. 
+
+#####INSTALLING PHYLOFLASH#####
+#I should avoid the conda packages on the compute canada server as much as I can so I will use the github links instead. 
+cd /project/6066480/gscheff/phyloFlash
+wget https://github.com/HRGV/phyloFlash/archive/pf3.4.tar.gz
+#To install the database, it has to be done on a SLURM script, too much memory needed.
+
+#!/bin/bash
+
+#SBATCH --job-name=Phyloflashdb      ## Name of the job.
+#SBATCH --nodes=1          ## (-N) number of nodes to use
+#SBATCH --ntasks=1           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=24    ## number of cores the job needs
+#SBATCH --error=phylo.err ## error log file
+#SBATCH --out=phylo.out ## out log file
+#SBATCH --mail-type=fail,invalid_depend,begin,end
+#SBATCH --mail-user=gabrielle.scheffe1@ucalgary.ca
+#SBATCH --time=1-00:00:00
+#SBATCH --mem=500G
+#SBATCH --account=def-srijakb
+
+module load vsearch
+module load mafft
+module load bbmap
+module load bowtie
+
+cd /project/6066480/gscheff/phyloFlash/phyloFlash-pf3.4
+
+/project/6066480/gscheff/phyloFlash/phyloFlash-pf3.4/phyloFlash_makedb.pl --remote
+
+#####RUNNING PHYLOFLASH#####
+
+#!/bin/bash
+
+#SBATCH --job-name=      ## Name of the job.
+#SBATCH --nodes=1          ## (-N) number of nodes to use
+#SBATCH --ntasks=1           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=24    ## number of cores the job needs
+#SBATCH --error=.err ## error log file
+#SBATCH --out=.out ## out log file
+#SBATCH --mail-type=fail,invalid_depend,begin,end
+#SBATCH --mail-user=
+#SBATCH --time=1-00:00:00
+#SBATCH --mem=500G
+#SBATCH --account=
+
+module load vsearch
+module load mafft
+module load bbmap
+module load bowtie
+
+cd /path/to/your/phyloflash/directory
+
+project/6066480/gscheff/phyloFlash/phyloFlash-pf3.4/phyloFlash.pl -lib samplename -read1 /path/to.your/sample.qc.R1.fastq -read2 /path/to/your/sample.qc.R2.fastq -CPUs 8 -readlength 150
