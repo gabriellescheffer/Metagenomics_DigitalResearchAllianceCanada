@@ -1,0 +1,24 @@
+#STEP 6: Binning 
+#Here, binning command lines are shown for metabat, but many other programs can be used.
+
+#!/bin/bash
+
+#SBATCH --job-name=      ## Name of the job.
+#SBATCH --nodes=1          ## (-N) number of nodes to use
+#SBATCH --ntasks=1           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=24    ## number of cores the job needs
+#SBATCH --error=.err ## error log file
+#SBATCH --out=.out ## out log file
+#SBATCH --mail-type=fail,invalid_depend,begin,end
+#SBATCH --mail-user=
+#SBATCH --time=1-00:00:00
+#SBATCH --mem=500G
+#SBATCH --account=
+
+module load metabat
+module load StdEnv/2020
+module load nixpkgs/16.09
+
+cd /path/to/your/binning/directory
+
+metabat -i your/path/to/the/assembly/directory/with/contigs_500.fa -a your/path/to/mapping/directory/with/depth_bowtie2.txt -o sample_name.bin -t 8 -v >& sample.name.metabat.log.txt
