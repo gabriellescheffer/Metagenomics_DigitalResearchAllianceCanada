@@ -1,0 +1,11 @@
+#CANT-HYD
+#Can be ran remotely on your own desktop
+
+#####TO INSTAL#####
+conda create --name hmmer
+#1. Convert the contigs.fa files from assembly (or bin) into amino acids using Prodigal
+conda activate prodigal
+-a proteins.fa -i final.contigs.fa -o co-assembly.fa -p meta
+#2. Run CANT-HYD
+conda activate hmmer
+hmmsearch --cpu 2 --notextw --tblout output.tbl catallcatalytic.hmm proteins.fa > /dev/null
