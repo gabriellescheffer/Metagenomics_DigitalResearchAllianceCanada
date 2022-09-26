@@ -1,0 +1,31 @@
+#Annotation
+#Many programs can be used. I prefer using DRAM or GhostKOALA.
+#GhostKOALA allows to upload the bins or any fasta file on a web browser. https://www.kegg.jp/ghostkoala/
+#DRAM is an annotator from the Wrighton lab, it can be ran with or without the subscription to KEGG. 
+#DRAM has not be ran on the Compute Canada server now, but only on ARC (University of Calgary). It will be installed later.
+#####DRAM#####
+#!/bin/bash
+###### Reserve computing resources ######
+#SBATCH --mail-user=gabrielle.scheffe1@ucalgary.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=500GB
+#SBATCH --time=24:00:00
+#SBATCH --partition=bigmem
+
+#set environmental parameters
+cd /your/path/to/the/annotation/directory
+
+source /home/gabrielle.scheffe1/miniconda3/etc/profile.d/conda.sh
+conda activate DRAM
+
+#this is to initialize your DRAM installation with already configured databases
+/home/gabrielle.scheffe1/miniconda3/bin/DRAM-setup.py set_database_locations --kofam_hmm_loc /work/ebg_lab/referenceDatabases/DRAM2/kofam_profiles.hmm --kofam_ko_list_loc /work/ebg_lab/referenceDatabases/DRAM2/kofam_ko_list.tsv --uniref_db_loc /work/ebg_lab/referenceDatabases/DRAM2/uniref90.20220122.mmsdb --pfam_db_loc /work/ebg_lab/referenceDatabases/DRAM2/pfam.mmspro --pfam_hmm_dat /work/ebg_lab/referenceDatabases/DRAM2/Pfam-A.hmm.dat.gz --dbcan_db_loc /work/ebg_lab/referenceDatabases/DRAM2/dbCAN-HMMdb-V9.txt --dbcan_fam_activities /work/ebg_lab/referenceDatabases/DRAM2/CAZyDB.07302020.fam-activities.txt --vogdb_db_loc /work/ebg_lab/referenceDatabases/DRAM2/vog_latest_hmms.txt --vog_annotations /work/ebg_lab/referenceDatabases/DRAM2/vog_annotations_latest.tsv.gz --viral_db_loc /work/ebg_lab/referenceDatabases/DRAM2/refseq_viral.20220122.mmsdb --peptidase_db_loc /work/ebg_lab/referenceDatabases/DRAM2/peptidases.20220122.mmsdb --description_db_loc /work/ebg_lab/referenceDatabases/DRAM2/description_db.sqlite --genome_summary_form_loc /work/ebg_lab/referenceDatabases/DRAM2/genome_summary_form.20220122.tsv --module_step_form_loc /work/ebg_lab/referenceDatabases/DRAM2/module_step_form.20220122.tsv --etc_module_database_loc /work/ebg_lab/referenceDatabases/DRAM2/etc_mdoule_database.20220122.tsv --function_heatmap_form_loc /work/ebg_lab/referenceDatabases/DRAM2/function_heatmap_form.20220122.tsv --amg_database_loc /work/ebg_lab/referenceDatabases/DRAM2/amg_database.20220122.tsv
+  
+####command
+/home/gabrielle.scheffe1/miniconda3/bin/DRAM.py annotate -i /your/input/fasta/file/contigs_500.fa -o samplename
+
+####Distill for summarized files
+DRAM.py distill -i /path/to/annotations.tsv -o distill  --trna_path /path/to/trnas.tsv --rrna_path /path/to/rrnas.tsv
