@@ -48,3 +48,23 @@ export CHECKM_DATA_PATH=/path/to/the/database/of/checkM
 
 cd /path/to/your/binning/file
 checkm lineage_wf -t 24 --pplacer_threads 1 -f checkm.txt -x fa /path/to/the/output/checkm/directory
+
+#####STEP 3: Generate taxonomy#####
+#!/bin/bash
+###### Reserve computing resources ######
+#SBATCH --mail-user=gabrielle.scheffe1@ucalgary.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=4
+#SBATCH --cpus-per-task=10
+#SBATCH --mem=100GB
+#SBATCH --time=03:00:00
+#SBATCH --partition=cpu2019,apophis-bf,pawson-bf,razi-bf
+###### Set environment variables ######
+
+conda activate gtdbtk
+###### Run your script ######
+cd /path/to/your/binning/directory
+gtdbtk classify_wf --genome_dir . -x fa --out_dir /path/to/your/output/directory/gtdb-tk --prefix project.name.bin --cpus 10
+##
+
