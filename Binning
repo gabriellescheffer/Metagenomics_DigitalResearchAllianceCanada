@@ -1,4 +1,4 @@
-#STEP 6: Binning 
+#####STEP 1: Binning#####
 #Here, binning command lines are shown for metabat, but many other programs can be used.
 
 #!/bin/bash
@@ -22,3 +22,29 @@ module load nixpkgs/16.09
 cd /path/to/your/binning/directory
 
 metabat -i your/path/to/the/assembly/directory/with/contigs_500.fa -a your/path/to/mapping/directory/with/depth_bowtie2.txt -o sample_name.bin -t 8 -v >& sample.name.metabat.log.txt
+
+#####STEP 2: Generate stats#####
+#STEP7: Quality check with CheckM
+
+#!/bin/bash
+
+#SBATCH --job-name=      ## Name of the job.
+#SBATCH --nodes=1            ## (-N) number of nodes to use
+#SBATCH --ntasks=1           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=24    ## number of cores the job needs
+#SBATCH --error=%x-%J-%a.err ## error log file
+#SBATCH --out=%x-%J-%a.out ## out log file
+#SBATCH --mail-type=fail,invalid_depend,begin,end
+#SBATCH --mail-user=gabrielle.scheffe1@ucalgary.ca
+#SBATCH --time=1-00:00:00
+#SBATCH --mem=128G
+#SBATCH --dependency=afterok:35290482
+#SBATCH --account=
+
+source /home/gscheff/.bashrc
+
+conda activate /path/to/the/envs/install/of/checkM
+export CHECKM_DATA_PATH=/path/to/the/database/of/checkM
+
+cd /path/to/your/binning/file
+checkm lineage_wf -t 24 --pplacer_threads 1 -f checkm.txt -x fa /path/to/the/output/checkm/directory
