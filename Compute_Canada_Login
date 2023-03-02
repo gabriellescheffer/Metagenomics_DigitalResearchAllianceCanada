@@ -4,7 +4,7 @@ For more information: https://docs.alliancecan.ca/wiki/Technical_documentation
 
 #####How to login from terminal#####
 #On your Mac, go to applications -> terminal -> double-click on it (the logo is a black box)
-ssh -Y USERNAME@XXX.calculcanada.ca (XXX -> cluster you decide to use: beluga, cedar, graham, narval) 
+ssh -Y USERNAME@XXX.computecanada.ca (XXX -> cluster you decide to use: beluga, cedar, graham, narval) 
 #first login = asks for permision, say yes to add to repertoire.
 #Enter the same password as the website login
 
