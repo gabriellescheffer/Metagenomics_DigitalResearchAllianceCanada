@@ -2,28 +2,38 @@
 Compute canada website: https://ccdb.computecanada.ca/security/login
 For more information: https://docs.alliancecan.ca/wiki/Technical_documentation
 
-#####How to login from terminal#####
+#####How to login from a Mac computer#####
 #On your Mac, go to applications -> terminal -> double-click on it (the logo is a black box)
 ssh -Y USERNAME@XXX.computecanada.ca (XXX -> cluster you decide to use: beluga, cedar, graham, narval) 
 #first login = asks for permision, say yes to add to repertoire.
 #Enter the same password as the website login
 
-#####How to visualize files on the server#####
-https://filezilla-project.org/ (choose if you need Mac or Windows)
+####How to login from a Windows computer#####
+#Download PuttY on your computer
+https://www.putty.org/
+ssh -Y USERNAME@XXX.calculcanada.ca (XXX -> cluster you decide to use: beluga, cedar, graham, narval) 
+#Enter the same password as the website login
+
+####How to visualize files on the server with a Mac computer#####
+https://filezilla-project.org/
 #Connect to it the same way as you do for the terminal 
 Host: clusterofchoice.computecanada.ca
 Username: XXX
 Password: XXX
 Port: 22
 
-#####How to install or use programs#####
-#You can always go to the bioconda website and download programs. Always remember to install them in their separate conda environments (see section on this).
-#To see what module/programs are available (some programs are already on the compute canada cloud, you only need to load it to use it)
-module avail
+####How to visualize files on the server with a Windows computer####
+#Download WinSCP
+https://winscp.net/eng/download.php
+#Connect to it the same way as you do for the terminal 
+Host: clusterofchoice.computecanada.ca
+Username: XXX
+Password: XXX
+Port: 22
 
 #####USING THE COMPUTE CANADA SERVER#####
 #STEP 1 : transferring the data to the Compute Canada server
-#Download Filezilla and open the application. Once open, enter the same info as to log in to the server with the terminal (see above).
+#Download Filezilla/WinSCP and open the application. Once open, enter the same info as to log in to the server with the terminal (see above).
 #The left window is usually your personal screen, and the right screen is the server screen. Find your directory and drag files from one window to another. 
 
 #STEP 2: Make sure the files are in the proper directory by checking the terminal
