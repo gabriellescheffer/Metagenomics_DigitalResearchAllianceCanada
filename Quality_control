@@ -3,23 +3,29 @@
 #ALL PROGRAMS ARE RUN IN A SLURM SCRIPT. DO NOT EVER RUN SCRIPT LINES OF A PROGRAM IN THE TERMINAL DIRECTLY 
 
 #STEP 1: Merge all the reads together (L1 to L4 of a same sample) for all samples
-[gscheff@cedar1 7gen]$ cd GS-C1-ORIG/
-[gscheff@cedar1 GS-C1-ORIG]$ ls
+#Typically, your samples will be separated in 4 different files, they need to be merged together.
+cd GS-C1-ORIG/
+ls
 Li32357_S133_L001_R1_001.fastq.gz  Li32357_S133_L003_R1_001.fastq.gz
 Li32357_S133_L001_R2_001.fastq.gz  Li32357_S133_L003_R2_001.fastq.gz
 Li32357_S133_L002_R1_001.fastq.gz  Li32357_S133_L004_R1_001.fastq.gz
 Li32357_S133_L002_R2_001.fastq.gz  Li32357_S133_L004_R2_001.fastq.gz
-[gscheff@cedar1 GS-C1-ORIG]$ zcat Li32357_S133_L00*_R1_001.fastq.gz > GSC-C1_ORIG_R1.fastq
-[gscheff@cedar1 GS-C1-ORIG]$ zcat Li32357_S133_L00*_R2_001.fastq.gz > GSC-C1_ORIG_R2.fastq
-#Here I changed the name of the samples so that it's easier to recognize
+#To merge the forward reads do:
+zcat Li32357_S133_L00*_R1_001.fastq.gz > GSC-C1_ORIG_R1.fastq
+#To merge the reverse reads do:
+zcat Li32357_S133_L00*_R2_001.fastq.gz > GSC-C1_ORIG_R2.fastq
+#Here I changed the name of the samples (GSC-C1_ORIG) so that it's easier to recognize
 #Do not use .qc.gz for the merged samples name otherwise the quality control step will not work.
 
-#STEP 2: Create a new directory called QC and move the new R1-R2 files there for all samples
+#STEP 2: Create a new directory called QC and move the new R1-R2 files there for all samples. 
+#All the other raw files should stay in the "raw" directory in case something gets deleted by mistake or steps need to be redone.
+#Create a QC directory
 mkdir QC
+#Move directory to get to the QC directory just created
 cd ../QC
 #3.3 Start the quality control steps (IN SLURM SCRIPTS)
 #we need to use BBduk for the quality control, which is part of the BBmap program on ComputeCanada
-#You need to download the BBtools program from your computer, open the file once downloaded, go to resources and copy the bbduk.sh, phix_adapter.gz and adapters.gz to the QC directory
+#You need to download the BBtools program from your computer, open the file once downloaded, go to resources and copy the bbduk.sh, phix_adapter.gz and adapters.gz and move it to the QC directory
 
 #!/bin/bash
 
@@ -32,7 +38,7 @@ cd ../QC
 #SBATCH --mail-type=fail,invalid_depend,begin,end
 #SBATCH --mail-user=gabrielle.scheffe1@ucalgary.ca
 #SBATCH --time=1-00:00:00
-#SBATCH --mem=128G ## memory needed to run the job (usually specified in program's specifics
+#SBATCH --mem=XXXG ## memory needed to run the job (usually specified in program's specifics
 #SBATCH --account=XXX ##account on the Compute Canada server
 
 module load bbmap
@@ -58,7 +64,7 @@ bbduk.sh -Xmx10g in=your_sample_name_filterPhix_R1.fastq in2=your_sample_name_fi
 #STEP 3: Assess quality control and visualize with fastqc
 #First, create a fastqc directory within the QC directory
 mkdir fastqc
-#Then, run the fastqc program. It will put html files for each sample within the fastqc directory. You will need to copy them from the directory to your own computer to open them (drag them from the fastqc directory to your desktop - left side of the Filezilla program)
+#Then, run the fastqc program. It will put html files for each sample within the fastqc directory. You will need to copy them from the directory to your own computer to open them (drag them from the fastqc directory to your desktop - left side of the Filezilla/WinSCP program)
 
 #example of fastqc SLURM script
 #!/bin/bash
@@ -72,7 +78,7 @@ mkdir fastqc
 #SBATCH --mail-type=fail,invalid_depend,begin,end
 #SBATCH --mail-user=gabrielle.scheffe1@ucalgary.ca
 #SBATCH --time=1-00:00:00
-#SBATCH --mem=128G
+#SBATCH --mem=XXXG
 #SBATCH --account=XXX
 
 module load fastqc
