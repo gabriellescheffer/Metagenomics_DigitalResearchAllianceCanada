@@ -53,3 +53,6 @@ GS-D14-C1-CDM  GS-D14-DM1-CDM  GS-D14-DMC3-CDM   GS-M1-ORIG
 GS-D14-C2-CDM  GS-D14-DM2-CDM  GS-D14-DMCUN-CDM
 [gscheff@cedar1 7gen]$ pwd
 /project/6066480/gscheff/Hubert_lab_project/7gen
+
+####ALL WORK SHOULD BE DONE IN THE DIRECTORY UNDER YOUR NAME, NEVER IN YOUR HOME DIRECTORY####
+username/projects/PIprojectname/username/work_from_there
