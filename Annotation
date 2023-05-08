@@ -1,9 +1,17 @@
-#Annotation
+####Annotation####
 #Many programs can be used. I prefer using DRAM or GhostKOALA.
 
+#Annotation from a web browser
 #GhostKOALA allows to upload the bins or any fasta file on a web browser.
-#I recomment to use GhostKOALA in concert with another annotator as I have find an overestimation of certain genes on KEGG databases. 
+#I recomment to use GhostKOALA in concert with another annotator as I have find an overestimation of certain genes on KEGG databases.
+#Bins need to be moved from the server to your computer for this (drag from the right window to the left on Filezilla/WinSCP).
 https://www.kegg.jp/ghostkoala/
+
+#Annotation on the server
+#Create a directory where annotation will be done
+mkdir annotation_sample_name
+#Move to where annotation will be done
+cd ../annotation_sample_name
 
 #DRAM is an annotator from the Wrighton lab, it can be ran with or without the subscription to KEGG. 
 
