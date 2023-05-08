@@ -1,11 +1,46 @@
 #CANT-HYD
-#Can be ran remotely on your own desktop
+#Can be easily ran on your own desktop (if you have a Mac) or be used on the server
 
-#####TO INSTAL#####
+#####TO INSTALL ON YOUR MAC (if you have conda installed already)#####
 conda create --name hmmer
 #1. Convert the contigs.fa files from assembly (or bin) into amino acids using Prodigal
 conda activate prodigal
--a proteins.fa -i final.contigs.fa -o co-assembly.fa -p meta
-#2. Run CANT-HYD
+prodigal -a proteins.fa -i final.contigs.fa -o co-assembly.fa -p meta
+#2. Download the Hmmer reference file CANTHYD.hmm
+https://github.com/dgittins/CANT-HYD-HydrocarbonBiodegradation
+#3.Run CANT-HYD
 conda activate hmmer
-hmmsearch --cpu 2 --notextw --tblout output.tbl catallcatalytic.hmm proteins.fa > /dev/null
+hmmsearch --cpu 2 --notextw --tblout output.tbl CANTHYD.hmm proteins.fa > /dev/null
+
+####TO INSTALL ON THE COMPUTE CANADA SERVER####
+
+#create a directory where you want to run CANT-HYD
+mkdir canthyd_samplename
+#Move to the directory 
+cd ../canthyd_samplename
+#Download the Hmmer reference file CANTHYD.hmm and move it onto the server directory where CANT-HYD will be ran
+https://github.com/dgittins/CANT-HYD-HydrocarbonBiodegradation
+
+#!/bin/bash
+
+#SBATCH --job-name=XXX ## Name of the job.
+#SBATCH --nodes=XXX          ## (-N) number of nodes to use
+#SBATCH --ntasks=XXX           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=XXX    ## number of cores the job needs
+#SBATCH --error=XXX.err ## error log file
+#SBATCH --out=XXX.out ## out log file
+#SBATCH --mail-type=fail,invalid_depend,begin,end
+#SBATCH --mail-user=XXX
+#SBATCH --time=XXX
+#SBATCH --mem=XXXG
+#SBATCH --account=XXX
+
+module load prodigal
+module load hmmer
+
+#Convert DNA sequences to AA sequences
+prodigal -a aa_CDS_samplename.fa -i /path/to/your/bin/file/samplename_bin.fa -o aa_samplename.fa -p meta
+
+#Run CANT-HYD
+hmmsearch --cpu 2 --notextw --tblout output_samplename.tbl CANTHYD.hmm aa_samplename.fa > /dev/null
+
