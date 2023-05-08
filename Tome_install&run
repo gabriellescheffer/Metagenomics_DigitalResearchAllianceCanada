@@ -1,0 +1,35 @@
+#Tome predicts the optimal temperature growth based on information in bins
+https://github.com/EngqvistLab/Tome/tree/master/tome
+
+#Install Tome
+#Downloaded the tome package from the Github and moved it to the directory where Tome will be installed 
+cd /path/where/Tome/will/be/installed
+ls
+LICENSE  README.md  setup.py  test  tome
+(base) [gscheff@cedar1 Tome]$ pip install -e .
+
+#Test to see if the install worked
+(base) [gscheff@cedar1 Tome]$ tome -h
+
+##Ran into issue trying to run TOME the first time 
+ImportError: cannot import name 'joblib' from 'sklearn.externals' (/home/gscheff/miniconda3/lib/python3.9/site-packages/sklearn/externals/__init__.py)
+#So I went to the predOGT.py and changed the line 23 "from sklearn.externals import joblib" to "import joblib"
+
+#Run Tome
+#!/bin/bash
+
+#SBATCH --job-name=TOME_XXX    ## Name of the job.
+#SBATCH --nodes=XXX          ## (-N) number of nodes to use
+#SBATCH --ntasks=XXX           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=XXX    ## number of cores the job needs
+#SBATCH --error=tome_XXX.err ## error log file
+#SBATCH --out=tome_XXX.out ## out log file
+#SBATCH --mail-type=fail,invalid_depend,begin,end
+#SBATCH --mail-user=XXX
+#SBATCH --time=XXX
+#SBATCH --mem=XXXG
+#SBATCH --account=XXX
+
+cd /path/where/Tome/will/be/ran
+
+tome predOGT --indir /full/path/install/test/proteomes/ -o sample_name.tsv --train
