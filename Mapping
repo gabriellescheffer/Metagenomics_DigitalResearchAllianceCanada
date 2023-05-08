@@ -1,20 +1,28 @@
-#STEP 1: Mapping
+####Mapping####
+
 #Many different programs can be used. Here, I will talk about Bowtie2.
 #If single assembly was done, then the assembly needs to be mapped back to the QC file it was generated from. 
 #If co-assembly was done, then the assembly needs to be mapped back to all QC files. Example below if a co-assembly was done with sample 1,2,3,4.
+
+#Create a directory for mapping files
+mkdir mapping_samplename
+#Move to the directory where mapping will be done
+cd ../mapping_samplename
+
+#Mapping#
 #!/bin/bash
 
-#SBATCH --job-name=    ## Name of the job.
-#SBATCH --nodes=1          ## (-N) number of nodes to use
-#SBATCH --ntasks=1           ## (-n) number of tasks to launch
-#SBATCH --cpus-per-task=24    ## number of cores the job needs
-#SBATCH --error=.err ## error log file
-#SBATCH --out=p.out ## out log file
+#SBATCH --job-name=XXX    ## Name of the job.
+#SBATCH --nodes=XXX          ## (-N) number of nodes to use
+#SBATCH --ntasks=XXX           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=XXX    ## number of cores the job needs
+#SBATCH --error=XXX.err ## error log file
+#SBATCH --out=XXX.out ## out log file
 #SBATCH --mail-type=fail,invalid_depend,begin,end
-#SBATCH --mail-user=
+#SBATCH --mail-user=XXX
 #SBATCH --time=1-00:00:00
-#SBATCH --mem=200G
-#SBATCH --account=
+#SBATCH --mem=XXXG
+#SBATCH --account=XXX
 
 module load bowtie2
 module load samtools
@@ -32,6 +40,7 @@ bowtie2-build -f /path/to/your/assembly/file/contigs_500.fa bowtie2_contigs
 #The percentage of mapped reads should be in the higher 90% ideally. If not, troubleshooting needs to be done.
 
 #####STEP 2: Generating depth files#####
+#Depth files allow to see if contigs from a sample are more or less abundant in a sample or not.
 module load samtools
 samtools index -@ 8 samplename.bowtie2_sorted.bam
 #Generate the files for all the samples.sorted.bam
