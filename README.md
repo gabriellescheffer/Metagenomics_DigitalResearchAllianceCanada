@@ -1,5 +1,5 @@
 # Metagenomics pipeline
-#Tailored for its use on the Digital Research Alliance Canada
+Tailored for its use on the Digital Research Alliance Canada
 https://ccdb.alliancecan.ca/security/login
 
 Compilation of codes related to the analyses of metagenomes on the DRAC cluster
