@@ -72,4 +72,6 @@ gtdbtk classify_wf --genome_dir . -x fa --out_dir /path/to/your/output/directory
 
 #If programs are not installed or for fewer samples, bins can be analyzed using KBase.
 https://www.kbase.us/
+#Tutorials are available: 
+https://www.kbase.us/learn/
 
