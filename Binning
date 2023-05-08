@@ -1,19 +1,24 @@
-#####STEP 1: Binning#####
+#####Binning#####
 #Here, binning command lines are shown for metabat, but many other programs can be used.
+
+#Create directory where binning will get done
+mkdir binning_samplename
+#Move to the directory where binning will be done
+cd ../binning_samplename
 
 #!/bin/bash
 
-#SBATCH --job-name=      ## Name of the job.
-#SBATCH --nodes=1          ## (-N) number of nodes to use
-#SBATCH --ntasks=1           ## (-n) number of tasks to launch
-#SBATCH --cpus-per-task=24    ## number of cores the job needs
-#SBATCH --error=.err ## error log file
-#SBATCH --out=.out ## out log file
+#SBATCH --job-name=XXX      ## Name of the job.
+#SBATCH --nodes=XXX          ## (-N) number of nodes to use
+#SBATCH --ntasks=XXX           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=XXX    ## number of cores the job needs
+#SBATCH --error=XXX.err ## error log file
+#SBATCH --out=XXX.out ## out log file
 #SBATCH --mail-type=fail,invalid_depend,begin,end
-#SBATCH --mail-user=
+#SBATCH --mail-user=XXX
 #SBATCH --time=1-00:00:00
-#SBATCH --mem=500G
-#SBATCH --account=
+#SBATCH --mem=XXXG
+#SBATCH --account=XXX
 
 module load metabat
 module load StdEnv/2020
@@ -23,23 +28,23 @@ cd /path/to/your/binning/directory
 
 metabat -i your/path/to/the/assembly/directory/with/contigs_500.fa -a your/path/to/mapping/directory/with/depth_bowtie2.txt -o sample_name.bin -t 8 -v >& sample.name.metabat.log.txt
 
-#####STEP 2: Generate stats#####
-#STEP7: Quality check with CheckM
+#####Generate stats#####
+#Quality check with CheckM
 
 #!/bin/bash
 
-#SBATCH --job-name=      ## Name of the job.
-#SBATCH --nodes=1            ## (-N) number of nodes to use
-#SBATCH --ntasks=1           ## (-n) number of tasks to launch
-#SBATCH --cpus-per-task=24    ## number of cores the job needs
+#SBATCH --job-name=XXX      ## Name of the job.
+#SBATCH --nodes=X            ## (-N) number of nodes to use
+#SBATCH --ntasks=X          ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=XXX    ## number of cores the job needs
 #SBATCH --error=%x-%J-%a.err ## error log file
 #SBATCH --out=%x-%J-%a.out ## out log file
 #SBATCH --mail-type=fail,invalid_depend,begin,end
 #SBATCH --mail-user=gabrielle.scheffe1@ucalgary.ca
 #SBATCH --time=1-00:00:00
-#SBATCH --mem=128G
+#SBATCH --mem=XXXG
 #SBATCH --dependency=afterok:35290482
-#SBATCH --account=
+#SBATCH --account=XXX
 
 source /home/gscheff/.bashrc
 
@@ -51,20 +56,20 @@ checkm lineage_wf -t 24 --pplacer_threads 1 -f checkm.txt -x fa /path/to/the/out
 
 #####STEP 3: Generate taxonomy#####
 #!/bin/bash
-###### Reserve computing resources ######
-#SBATCH --mail-user=gabrielle.scheffe1@ucalgary.ca
-#SBATCH --mail-type=ALL
-#SBATCH --nodes=1
-#SBATCH --ntasks=4
-#SBATCH --cpus-per-task=10
-#SBATCH --mem=100GB
-#SBATCH --time=03:00:00
-#SBATCH --partition=cpu2019,apophis-bf,pawson-bf,razi-bf
-###### Set environment variables ######
 
-conda activate gtdbtk
-###### Run your script ######
+#SBATCH --mail-user=XXX
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=XXX
+#SBATCH --ntasks=XXX
+#SBATCH --cpus-per-task=XXX
+#SBATCH --mem=XXXG
+#SBATCH --time=XXX
+
+conda activate /path/to/GTDB-Tk
+
 cd /path/to/your/binning/directory
 gtdbtk classify_wf --genome_dir . -x fa --out_dir /path/to/your/output/directory/gtdb-tk --prefix project.name.bin --cpus 10
-##
+
+#If programs are not installed or for fewer samples, bins can be analyzed using KBase.
+https://www.kbase.us/
 
