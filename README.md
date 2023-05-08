@@ -1,5 +1,8 @@
-# Metagenomics_ComputeCanada
-Compilation of codes related to the analyses of metagenomes on the Compute Canada cluster
+# Metagenomics pipeline
+#Tailored for its use on the Digital Research Alliance Canada
+https://ccdb.alliancecan.ca/security/login
+
+Compilation of codes related to the analyses of metagenomes on the DRAC cluster
 
 These codes have been compiled and optimized over the years to successfully obtain MAGs from environmental samples and analyze them. 
 They come from publications, colleagues, and myself and have been modified depending on samples's need. 
