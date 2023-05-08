@@ -1,0 +1,88 @@
+#DRAM is an annotator tool from Colorado State University, USA
+https://github.com/WrightonLabCSU/DRAM
+
+#DRAM was installed in a virtualenv to avoid any requirement and program conflicts.
+#Install virtualenv on the server
+(base) [gscheff@cedar1 ~]$ cd /project/DRAM-virtualenv
+(base) [gscheff@cedar1 DRAM-virtualenv]$ pip install virtualenv
+
+#Then the right Python version needs to be loaded
+(base) [gscheff@cedar1 DRAM-virtualenv]$ module load python/3.9.6
+
+#Create the virtual environment named DRAM and activate it
+(base) [gscheff@cedar1 DRAM-virtualenv]$ virtualenv -p python DRAM
+(base) [gscheff@cedar1 DRAM-virtualenv]$ source DRAM/bin/activate
+
+#Start installing all other dependencies that are necessary to run DRAM
+(DRAM) (base) [gscheff@cedar1 DRAM-virtualenv]$ pip install pandas
+(DRAM) (base) [gscheff@cedar1 DRAM-virtualenv]$ pip install networkx
+(DRAM) (base) [gscheff@cedar1 DRAM-virtualenv]$ pip install scikit-bio
+#now need to install infernal (follow the steps)
+   % wget http://eddylab.org/software/infernal/infernal.tar.gz
+   % tar zxf infernal.tar.gz
+   % cd infernal-1.1.4
+   % ./configure --prefix /your/install/path
+   % make
+   % make check                 # optional: run automated tests
+   % make install               # optional: install Infernal programs, man pages
+   % (cd hmmer; make install)   # optional: install HMMER programs
+   % (cd easel; make install)   # optional: install Easel tools
+#need to install trna-scan too
+Starting from a source distribution, trnascan-se-2.0.0.tar.gz:
+   % uncompress:                gunzip trnascan-se-2.0.0.tar.gz  
+   % unpack:                    tar xf trnascan-se-2.0.0.tar
+   % move into new directory:   cd trnascan-se-2.0.0
+   % configure:                 ./configure
+   % build:                     make
+   % automated install:         make install
+#specified the ouput of configure between infernal and tRNAscan
+(DRAM) (base) [gscheff@cedar5 trnascan-se-2.0.0]$ cd /project/6002442/DRAM-virtualenv/bin
+(DRAM) (base) [gscheff@cedar5 bin]$ ls
+alimask       esl-alimap      esl-sfetch               hmmpress
+cmalign       esl-alimask     esl-shuffle              hmmscan
+cmbuild       esl-alimerge    esl-ssdraw               hmmsearch
+cmcalibrate   esl-alipid      esl-translate            hmmsim
+cmconvert     esl-alirev      esl-weight               hmmstat
+cmemit        esl-alistat     eufindtRNA               jackhmmer
+cmfetch       esl-compalign   EukHighConfidenceFilter  makehmmerdb
+cmpress       esl-compstruct  fasta2gsi                MitoHighConfidenceFilter
+cmscan        esl-construct   hmmalign                 nhmmer
+cmsearch      esl-histplot    hmmbuild                 nhmmscan
+cmstat        esl-mask        hmmconvert               phmmer
+covels-SE     esl-mixdchlet   hmmemit                  sstofa
+coves-SE      esl-reformat    hmmfetch                 trnascan-1.4
+easel         esl-selectn     hmmlogo                  tRNAscan-SE
+esl-afetch    esl-seqrange    hmmpgmd                  tRNAscan-SE.conf
+esl-alimanip  esl-seqstat     hmmpgmd_shard
+#Then, install DRAM
+(DRAM) (base) [gscheff@cedar1 DRAM-virtualenv]$ pip install DRAM-bio 
+
+#To install the database, do so in a SLURM script, it is memory intensive
+#!/bin/bash
+
+#SBATCH --job-name=dramDATABASE ## Name of the job.
+#SBATCH --nodes=1          ## (-N) number of nodes to use
+#SBATCH --ntasks=1           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=24    ## number of cores the job needs
+#SBATCH --error=dram.err ## error log file
+#SBATCH --out=dram.out ## out log file
+#SBATCH --mail-type=fail,invalid_depend,begin,end
+#SBATCH --mail-user=XXX
+#SBATCH --time=1-00:00:00
+#SBATCH --mem=500G
+#SBATCH --account=XXX
+
+module load python/3.9.6
+module load gcc/11.3.0
+module load prodigal
+module load mmseqs2
+module load hmmer
+
+source /path/to/your/DRAM-virtualenv/DRAM/bin/activate
+
+cd /path/to/your/DRAM/DRAM-virtualenv
+
+#Install DRAM, here it will skip uniref and this code is used if you do not have access to KEGG database. If you do, refer to the DRAM GitHub for another code
+DRAM-setup.py prepare_databases --skip_uniref --output_dir DRAM_data
+
+
