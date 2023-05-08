@@ -1,43 +1,26 @@
 #####Assembly#####
 #At this step, you can choose to do a regular assembly or a co-assembly. If you have replicates of samples that you have a lower amount of reads (file size below 1,000,000 kb), then I recommend the co-assembly steps. You can always run single assemblies on each sample and do the co-assembly of replicates in parallel to see which method is best. Bioinformatics is trial and error and always varies between sample types. 
-#Different programs can be used for assembly. MegaHit is available on the Compute Canada server, while MetaSpades needs to be installed.
+#Different programs can be used for assembly. MegaHit is available on the Compute Canada server.
 
-#####STEP 1: Assembly#####
-#Here, I show the command lines for both MetaSpades and Megahit.
-#####MetaSpades#####
+#####Assembly#####
+#Create a directory for the assembly
+mkdir assembly_samplename
+#move to new assembly folder
+cd ../assembly_samplename
+
 #!/bin/bash
 
-#SBATCH --job-name=      ## Name of the job.
-#SBATCH --nodes=1          ## (-N) number of nodes to use
-#SBATCH --ntasks=1           ## (-n) number of tasks to launch
-#SBATCH --cpus-per-task=24    ## number of cores the job needs
-#SBATCH --error=.err ## error log file
-#SBATCH --out=.out ## out log file
+#SBATCH --job-name=XXX      ## Name of the job.
+#SBATCH --nodes=XXX          ## (-N) number of nodes to use
+#SBATCH --ntasks=XXX           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=XXX    ## number of cores the job needs
+#SBATCH --error=XXX.err ## error log file
+#SBATCH --out=XXX.out ## out log file
 #SBATCH --mail-type=fail,invalid_depend,begin,end
-#SBATCH --mail-user=
+#SBATCH --mail-user=XXX
 #SBATCH --time=1-00:00:00
-#SBATCH --mem=500G
-#SBATCH --account=
-
-source /home/username/.bashrc
-
-cd /your/path/to/the/metaspades/directory
-/home/gscheff/miniconda3/bin/spades.py --pe1-1 your/R1/path --pe1-2 /your/R2/path  -t 8 -m 50  --phred-offset 33 -o metaspades_assembly  >& metaspades_assembly.log.txt
-
-#####Megahit#####
-#!/bin/bash
-
-#SBATCH --job-name=      ## Name of the job.
-#SBATCH --nodes=1          ## (-N) number of nodes to use
-#SBATCH --ntasks=1           ## (-n) number of tasks to launch
-#SBATCH --cpus-per-task=24    ## number of cores the job needs
-#SBATCH --error=.err ## error log file
-#SBATCH --out=.out ## out log file
-#SBATCH --mail-type=fail,invalid_depend,begin,end
-#SBATCH --mail-user=
-#SBATCH --time=1-00:00:00
-#SBATCH --mem=500G
-#SBATCH --account=
+#SBATCH --mem=XXXG
+#SBATCH --account=XXX
 
 module load megahit
 
@@ -45,45 +28,25 @@ cd /path/to/your/assembly/directory
 
 megahit -1 /your/R1/path -2 /your/R2/path -t 8 -m 0.5 --k-max 149 -o assembly >& assembly.log.txt
 
-#####STEP 2: Co-assembly#####
+#####Co-assembly#####
 #create a directory for the co-assembly 
-mkdir co-assembly
+mkdir co-assembly_samplename
+#move to the new directory created
+cd ../co-assembly_samplename
 #####MetaSpades#####
 
 #!/bin/bash
 
-#SBATCH --job-name=     ## Name of the job.
-#SBATCH --nodes=1          ## (-N) number of nodes to use
-#SBATCH --ntasks=1           ## (-n) number of tasks to launch
-#SBATCH --cpus-per-task=24    ## number of cores the job needs
-#SBATCH --error=.err ## error log file
-#SBATCH --out=.out ## out log file
-#SBATCH --mail-type=fail,invalid_depend,begin,end
-#SBATCH --mail-user=
-#SBATCH --time=1-00:00:00
-#SBATCH --mem=500G
-#SBATCH --account=
-
-source /home/gscheff/.bashrc
-
-cd /your/co/assembly/directory
-/home/gscheff/miniconda3/bin/spades.py --pe1-1 your/R1/sample1/path --pe2-1 your/R1/sample2/path --pe3-1 your/R1/sample3/path --pe1-2 /your/R2/sample1/path --pe2-2 /your/R2/sample2/path --pe3-2 /your/R2/sample3/path  -t 8 -m 50  --phred-offset 33 -o metaspades_coassembly  >& metaspades_coassembly.log.txt
-
-#Megahit#####
-#example of co-assembly SLURM script
-
-#!/bin/bash
-
-#SBATCH --job-name=XXX      ## Name of the job.
-#SBATCH --nodes=1          ## (-N) number of nodes to use
-#SBATCH --ntasks=1           ## (-n) number of tasks to launch
-#SBATCH --cpus-per-task=24    ## number of cores the job needs
+#SBATCH --job-name=XXX     ## Name of the job.
+#SBATCH --nodes=XXX          ## (-N) number of nodes to use
+#SBATCH --ntasks=XXX           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=XXX    ## number of cores the job needs
 #SBATCH --error=XXX.err ## error log file
 #SBATCH --out=XXX.out ## out log file
 #SBATCH --mail-type=fail,invalid_depend,begin,end
-#SBATCH --mail-user=gabrielle.scheffe1@ucalgary.ca
+#SBATCH --mail-user=XXX
 #SBATCH --time=1-00:00:00
-#SBATCH --mem=500G
+#SBATCH --mem=XXXG
 #SBATCH --account=XXX
 
 module load megahit
@@ -92,22 +55,23 @@ cd /your/path/to/the/coassembly/directory
 
 megahit -1 /full/path/to/the/your_sample_1.qc.R1.fastq,/full/path/to/the/your_sample_2.qc.R1.fastq,/full/path/to/the/your_sample_3.qc.R1.fastq -2 /full/path/to/the/your_sample_1.qc.R2.fastq,/full/path/to/the/your_sample_2.qc.R2.fastq,/full/path/to/the/your_sample_3.qc.R2.fastq -t 8 -m 0.5 --k-max 149 -o your_id_name >& your_id_name_megahit_coassembly.log.txt
 
-#Assembly is the longest step of the process, be patient. I would submit my other SLURM script once I know that my first job went well. 
+#Assembly is the longest step of the process, be patient. I would submit my other SLURM script once I know that my first sample went well. 
 #I also tried to do the assembly with the meta-sensitive option with Megahit to see if I get better results. I did because I have "problematic samples", do not do if you have good stats.
 
-#####STEP 3: filter out the shorter than 500 contigs within the finals.contigs.fa file#####
+#####Filter out the shorter than 500 contigs within the finals.contigs.fa file#####
 #Keeping those shorter contigs results in lower quality samples for the subsequent steps. 
 #You will need the pullseq program for this to be in each directory that has the final.contigs.fa file
 module load pullseq
-pullseq -i /your/path/to/the/assembly/directory/with/final.contigs.fa -m 500 > contigs_500.fa
+pullseq -i /your/path/to/the/assembly/directory/with/final.contigs.fa -m 500 > samplename_contigs_500.fa
 
 #####STEP 4: Change the contig header's name in the files##### 
-Otherwise all your headers will be the same and can be overwritten in the later steps.
+#This has to be done if multiple samples are analyzed
+#Otherwise all your headers will be the same and can be overwritten in the later steps.
 #Example if I want to add mixDMC as a header:
 module load perl
 perl -pi -le 's/>/>mixDMC_/g' /your/path/to/the/assembly/directory/with/final/contigs_500.fa
 
 #####STEP 5: Generage stats#####
-#For each of the contigs bigger than 500bp, generate a stats file. You will need to have the SeqStats.pl file in your directory
+#For each of the contigs bigger than 500bp, generate a stats file. You will need to have the SeqStats.pl file in your directory (message me for the file).
 module load perl
 perl seqStats.pl -f fasta -s contigs_500.fa > contigs.500.stats.txt
