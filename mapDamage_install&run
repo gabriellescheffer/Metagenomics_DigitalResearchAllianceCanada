@@ -1,0 +1,57 @@
+###RUN###
+#create a folder for all mapdamage files and create a conda environment. Then, install the conda package.
+/path/to/install/mapDAMAGE
+module load python/3.10.2
+conda create -n mapDamage python=3.5
+conda activate mapDamage
+conda install -c bioconda mapdamage2
+mapDamage -h
+
+###RUN###
+#MapDamage runs the sample with a BAM file that is single-ended only. This means that we need to modify the output of the mapping files that we processed previously if used Bowtie2 mapping.  
+#Redo the mapping, but only with one end of reads (F or R)
+#!/bin/bash
+
+#SBATCH --job-name=XXXX      ## Name of the job.
+#SBATCH --nodes=1          ## (-N) number of nodes to use
+#SBATCH --ntasks=1           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=24    ## number of cores the job needs
+#SBATCH --error=XXXX.err ## error log file
+#SBATCH --out=XXXX.out ## out log file
+#SBATCH --mail-type=fail,invalid_depend,begin,end
+#SBATCH --mail-user=XXXX
+#SBATCH --time=1-00:00:00
+#SBATCH --mem=500G
+#SBATCH --account=XXXX
+
+module load bowtie2
+module load samtools
+
+cd /path/to/where/the//redo-mapping-onlyForward
+
+bowtie2-build -f /path/to/the/contigs/longer/than/500/contigs_500.fa bowtie2_contigs
+
+(bowtie2 --threads 8 --local -x bowtie2_contigs -U /path/to/QC/read/forwardORreverse/XXXX.qc.R1.fastq | samtools view -@ 8 -Sb1 - | samtools sort -m 10G -@ 8 -o XXXX.bowtie2_sorted.bam -) 3>&1 1>&2 2>&3 | tee XXXX.bowtie2_map.log.txt
+
+#Once this mapping step is redone. You can run mapDamage: 
+#!/bin/bash
+
+#SBATCH --job-name=XXXX     ## Name of the job.
+#SBATCH --nodes=1          ## (-N) number of nodes to use
+#SBATCH --ntasks=1           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=24    ## number of cores the job needs
+#SBATCH --error=XXXX.err ## error log file
+#SBATCH --out=XXXX.out ## out log file
+#SBATCH --mail-type=fail,invalid_depend,begin,end
+#SBATCH --mail-user=XXXX
+#SBATCH --time=1-00:00:00
+#SBATCH --mem=128G
+#SBATCH --account=XXXX
+
+cd /path/to/where/the/mapDamage/files/will/go
+
+source /your/own/.bashrc
+
+conda activate mapDamage 
+
+mapDamage -i /path/to/single-end/XXXX.bowtie2_sorted.bam -r /path/to/the/contigs/longer/than/500/contigs_500.fa
