@@ -1,0 +1,12 @@
+###INSTALL###
+#Move to the directory where the install will be
+cd /path/to/install/coverM
+#Create the conda environment for the install and load the appropriate python
+module load python/3.9.6
+conda create --name coverM
+#Activate the conda environment, install coverM and test the install 
+conda activate coverM
+conda install coverm
+coverm -h
+
+###RUN###
