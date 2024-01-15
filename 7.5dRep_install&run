@@ -1,0 +1,69 @@
+
+###INSTALL###
+#dRep allows to dereplicate bins after the binning step in case of duplicate from different samples.
+#Try installing within a conda environment.
+(base) [gscheff@cedar5 dRep]$ cd /path/to/install/dRep
+(base) [gscheff@cedar5 dRep]$ conda create --name dRep
+(base) [gscheff@cedar5 dRep]$ conda activate dRep
+(dRep) [gscheff@cedar5 dRep]$ conda install -c bioconda drep
+#Ran a SLURM script to check dependencies after the install to make sure all is there
+#!/bin/bash
+
+#SBATCH --job-name=XXXX      ## Name of the job.
+#SBATCH --nodes=1          ## (-N) number of nodes to use
+#SBATCH --ntasks=1           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=24    ## number of cores the job needs
+#SBATCH --error=XXXX.err ## error log file
+#SBATCH --out=XXXX.out ## out log file
+#SBATCH --mail-type=fail,invalid_depend,begin,end
+#SBATCH --mail-user=XXXX
+#SBATCH --time=3-00:00:00
+#SBATCH --mem=500G
+#SBATCH --account=XXXX
+
+cd /path/to/install/dRep
+
+source /own/.bashrc
+
+conda activate /path/to/miniconda/envs/dRep
+
+dRep check_dependencies
+
+mash.................................... all good        (location = XXXX)
+nucmer.................................. all good        (location = XXXX)
+checkm.................................. !!! ERROR !!!   (location = XXXX)
+ANIcalculator........................... !!! ERROR !!!   (location = None)
+prodigal................................ all good        (location = XXXX)
+centrifuge.............................. !!! ERROR !!!   (location = None)
+nsimscan................................ !!! ERROR !!!   (location = None)
+fastANI................................. all good        (location = XXXX)
+
+#OK. Now install all dependencies within the conda environment. Note: If CheckM is installed but not within the conda environment, it will give an error message (ERROR !!!) when checking dependencies.
+(dRep) [gscheff@cedar5 dRep]$ conda install -c bioconda numpy matplotlib pysam
+(dRep) [gscheff@cedar5 dRep]$ conda install -c bioconda hmmer prodigal pplacer                                                   
+(dRep) [gscheff@cedar5 dRep]$ pip3 install checkm-genome
+
+###RUN###
+#!/bin/bash
+
+#SBATCH --job-name=XXXX     ## Name of the job.
+#SBATCH --nodes=1          ## (-N) number of nodes to use
+#SBATCH --ntasks=1           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=24    ## number of cores the job needs
+#SBATCH --error=XXXX.err ## error log file
+#SBATCH --out=XXXX.out ## out log file
+#SBATCH --mail-type=fail,invalid_depend,begin,end
+#SBATCH --mail-user=XXXX
+#SBATCH --time=3-00:00:00
+#SBATCH --mem=500G
+#SBATCH --account=XXXX
+
+cd /path/to/the/bins/with/completeness/and/redundancy/conditions/satisfied/Good_bins
+
+source /own/.bashrc
+
+conda activate /path/to/miniconda/envs/dRep
+
+export PATH=$PATH:/path/to/your/conda/env/checkm
+
+dRep dereplicate -g /path/to/the/bins/with/completeness/and/redundancy/conditions/satisfied/Good_bins/*.fa
