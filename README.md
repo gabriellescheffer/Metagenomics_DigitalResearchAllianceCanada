@@ -19,5 +19,9 @@ https://github.com/christophertbrown/iRep
 https://github.com/Ecogenomics/CheckM
 https://github.com/Ecogenomics/GTDBTk
 https://github.com/HRGV/phyloFlash
+https://github.com/MrOlm/drep
+https://github.com/liphlab/Kaiju-core
+https://github.com/wwood/CoverM
+https://ginolhac.github.io/mapDamage/
 
 For questions or comments: gabrielle.scheffe1@ucalgary.ca
